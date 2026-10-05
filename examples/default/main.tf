@@ -34,9 +34,13 @@ resource "azapi_resource" "resource_group" {
 module "test" {
   source = "../../"
 
-  location         = var.location
-  name             = "wps-${random_string.suffix.result}"
-  parent_id        = azapi_resource.resource_group.id
-  enable_telemetry = var.enable_telemetry
-  tags             = var.tags
+  location            = var.location
+  name                = "wps-${random_string.suffix.result}"
+  parent_id           = azapi_resource.resource_group.id
+  enable_telemetry    = var.enable_telemetry
+  ignore_body_changes = var.ignore_body_changes.signalrservice_web_pub_sub
+  resource_types      = var.resource_types.signalrservice_web_pub_sub
+  retry               = var.retry
+  tags                = var.tags
+  timeouts            = var.timeouts
 }
