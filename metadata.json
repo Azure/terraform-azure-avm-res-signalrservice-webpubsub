@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "SignalR Service Web PubSub",
+  "moduleDescription": "AVM Terraform resource module for SignalR Service Web PubSub.",
+  "canonicalType": "Microsoft.SignalRService/webPubSub",
+  "owners": [
+    "sujaypillai"
+  ],
+  "telemetryIdPrefix": "46d3xtrf.res.2d500b7"
+}
