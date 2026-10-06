@@ -12,7 +12,7 @@ resource "random_string" "suffix" {
 
 resource "azapi_resource" "resource_group" {
   location               = var.location
-  name                   = "rg-webpubsub-${random_string.suffix.result}"
+  name                   = "rg-webpubsub-socketio-${random_string.suffix.result}"
   parent_id              = "/subscriptions/${data.azapi_client_config.current.subscription_id}"
   type                   = var.resource_types.resources_resource_groups
   ignore_body_changes    = length(var.ignore_body_changes.resources_resource_groups) > 0 ? var.ignore_body_changes.resources_resource_groups : null
@@ -39,13 +39,17 @@ module "test" {
     random = random
   }
 
-  location            = var.location
-  name                = "wps-${random_string.suffix.result}"
-  parent_id           = azapi_resource.resource_group.id
-  enable_telemetry    = var.enable_telemetry
-  ignore_body_changes = var.ignore_body_changes.signalrservice_web_pub_sub
-  resource_types      = var.resource_types.signalrservice_web_pub_sub
-  retry               = var.retry
-  tags                = var.tags
-  timeouts            = var.timeouts
+  location                      = var.location
+  name                          = "socketio-${random_string.suffix.result}"
+  parent_id                     = azapi_resource.resource_group.id
+  enable_telemetry              = var.enable_telemetry
+  ignore_body_changes           = var.ignore_body_changes.signalrservice_web_pub_sub
+  kind                          = "SocketIO"
+  local_auth_enabled            = false
+  public_network_access_enabled = true
+  resource_types                = var.resource_types.signalrservice_web_pub_sub
+  retry                         = var.retry
+  socket_io_service_mode        = "Serverless"
+  tags                          = var.tags
+  timeouts                      = var.timeouts
 }
