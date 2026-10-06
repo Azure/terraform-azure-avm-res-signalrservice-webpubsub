@@ -83,6 +83,9 @@ module "test" {
         { category = "HttpRequestLogs" },
         { category = "MessagingLogs" },
       ]
+      metrics = [
+        { category = "AllMetrics", enabled = false },
+      ]
     }
   }
   enable_telemetry    = var.enable_telemetry

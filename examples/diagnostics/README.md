@@ -4,7 +4,7 @@
 
 This self-contained Azure public-cloud example deploys Web PubSub with resource logs sent to a Log Analytics workspace. It uses AzAPI for every Azure resource.
 
-The example creates a resource group, a Log Analytics workspace in the same region as Web PubSub, and a Standard\_S1 service. Its diagnostic setting sends `ConnectivityLogs`, `HttpRequestLogs`, and `MessagingLogs` to the workspace using the dedicated Log Analytics table destination. Workspace access is restricted to resource permissions, and the configured retention is 30 days.
+The example creates a resource group, a Log Analytics workspace in the same region as Web PubSub, and a Standard\_S1 service. Its diagnostic setting sends `ConnectivityLogs`, `HttpRequestLogs`, and `MessagingLogs` to the workspace using the dedicated Log Analytics table destination, and explicitly disables `AllMetrics` because this example routes resource logs only. Workspace access is restricted to resource permissions, and the configured retention is 30 days.
 
 ## Run the example
 
@@ -118,6 +118,9 @@ module "test" {
         { category = "ConnectivityLogs" },
         { category = "HttpRequestLogs" },
         { category = "MessagingLogs" },
+      ]
+      metrics = [
+        { category = "AllMetrics", enabled = false },
       ]
     }
   }
