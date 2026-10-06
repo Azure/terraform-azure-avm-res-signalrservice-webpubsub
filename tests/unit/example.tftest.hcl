@@ -19,6 +19,16 @@ mock_provider "azapi" {
       tenant_id       = "00000000-0000-0000-0000-000000000001"
     }
   }
+  mock_data "azapi_resource_list" {
+    defaults = {
+      output = {
+        results = [{
+          role_name = "Web PubSub Service Reader"
+          id        = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/bfb1c7d2-fb1a-466b-b2ba-aee63b92deaf"
+        }]
+      }
+    }
+  }
 }
 
 mock_provider "random" {
@@ -173,5 +183,117 @@ run "private" {
   assert {
     condition     = azapi_resource.virtual_network.tags.environment == "unit" && azapi_resource.private_dns_zone.retry.interval_seconds == 5 && azapi_resource.private_dns_virtual_network_link.timeouts.create == "45m"
     error_message = "Tags and operation controls must reach the supporting network resources."
+  }
+}
+
+run "socketio" {
+  command = apply
+
+  module {
+    source = "./examples/socketio"
+  }
+
+  variables {
+    enable_telemetry = false
+  }
+
+  override_resource {
+    target = azapi_resource.resource_group
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example"
+    }
+  }
+
+  assert {
+    condition     = output.service_mode == "Serverless" && can(provider::azapi::parse_resource_id("Microsoft.SignalRService/webPubSub", output.resource_id))
+    error_message = "The example must expose a Socket.IO service configured in Serverless mode."
+  }
+}
+
+run "diagnostics" {
+  command = apply
+
+  module {
+    source = "./examples/diagnostics"
+  }
+
+  variables {
+    enable_telemetry = false
+  }
+
+  override_resource {
+    target = azapi_resource.resource_group
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example"
+    }
+  }
+  override_resource {
+    target = azapi_resource.log_analytics_workspace
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example/providers/Microsoft.OperationalInsights/workspaces/example"
+    }
+  }
+  override_resource {
+    target = module.test.azapi_resource.diagnostic_settings["logs"]
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example/providers/Microsoft.Insights/diagnosticSettings/example"
+    }
+  }
+
+  assert {
+    condition     = azapi_resource.log_analytics_workspace.body.properties.sku.name == "PerGB2018" && azapi_resource.log_analytics_workspace.body.properties.retentionInDays == 30 && azapi_resource.log_analytics_workspace.body.properties.features.enableLogAccessUsingOnlyResourcePermissions
+    error_message = "The example must create a 30-day Log Analytics workspace with resource-only access."
+  }
+
+  assert {
+    condition     = can(provider::azapi::parse_resource_id("Microsoft.Insights/diagnosticSettings", output.diagnostic_setting_resource_id))
+    error_message = "The module must create and expose its diagnostic setting."
+  }
+}
+
+run "identity_rbac" {
+  command = apply
+
+  module {
+    source = "./examples/identity_rbac"
+  }
+
+  variables {
+    enable_telemetry = false
+  }
+
+  override_resource {
+    target = azapi_resource.resource_group
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example"
+    }
+  }
+  override_resource {
+    target = azapi_resource.user_assigned_identity
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example/providers/Microsoft.ManagedIdentity/userAssignedIdentities/example"
+      output = {
+        properties = {
+          clientId    = "00000000-0000-0000-0000-000000000002"
+          principalId = "00000000-0000-0000-0000-000000000003"
+        }
+      }
+    }
+  }
+  override_resource {
+    target = module.test.azapi_resource.role_assignments["workload"]
+    values = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example/providers/Microsoft.SignalRService/webPubSub/wps/providers/Microsoft.Authorization/roleAssignments/00000000-0000-0000-0000-000000000004"
+    }
+  }
+
+  assert {
+    condition     = can(provider::azapi::parse_resource_id("Microsoft.ManagedIdentity/userAssignedIdentities", output.user_assigned_identity_resource_id)) && output.user_assigned_identity_client_id == "00000000-0000-0000-0000-000000000002"
+    error_message = "The example must create and expose its user-assigned identity."
+  }
+
+  assert {
+    condition     = can(provider::azapi::parse_resource_id("Microsoft.Authorization/roleAssignments", output.role_assignment_resource_id))
+    error_message = "The example must create and expose the Web PubSub Service Reader role assignment."
   }
 }
