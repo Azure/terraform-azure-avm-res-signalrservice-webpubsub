@@ -69,11 +69,6 @@ resource "azapi_resource" "resource_group" {
 
 module "test" {
   source = "../../"
-  providers = {
-    azapi  = azapi
-    modtm  = modtm
-    random = random
-  }
 
   location            = var.location
   name                = "wps-${random_string.suffix.result}"

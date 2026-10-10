@@ -164,11 +164,6 @@ resource "azapi_resource" "private_dns_virtual_network_link" {
 
 module "test" {
   source = "../../"
-  providers = {
-    azapi  = azapi
-    modtm  = modtm
-    random = random
-  }
 
   location            = var.location
   name                = "wps-private-${random_string.suffix.result}"
