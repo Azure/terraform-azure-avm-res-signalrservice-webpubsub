@@ -67,6 +67,9 @@ resource "azapi_resource" "resource_group" {
 
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
   location                      = var.location
   name                          = "socketio-${random_string.suffix.result}"

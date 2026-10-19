@@ -92,6 +92,9 @@ resource "azapi_resource" "user_assigned_identity" {
 
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
   location            = var.location
   name                = "wps-identity-${random_string.suffix.result}"
