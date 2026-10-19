@@ -101,6 +101,9 @@ resource "azapi_resource" "log_analytics_workspace" {
 
 module "test" {
   source = "../../"
+  providers = {
+    azapi = azapi
+  }
 
   location  = var.location
   name      = "wps-diagnostics-${random_string.suffix.result}"
