@@ -1,13 +1,13 @@
 mock_provider "azapi" {
   mock_data "azapi_client_config" {
     defaults = {
-      subscription_id = "00000000-0000-0000-0000-000000000000"
-      tenant_id       = "00000000-0000-0000-0000-000000000001"
+      subscription_id          = "00000000-0000-0000-0000-000000000000"
+      tenant_id                = "00000000-0000-0000-0000-000000000001"
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
     }
   }
 }
 
-mock_provider "modtm" {}
 mock_provider "random" {}
 
 override_resource {
@@ -67,6 +67,10 @@ run "secure_defaults" {
   assert {
     condition     = output.system_assigned_mi_principal_id == null
     error_message = "Disabled system-assigned identity must return null."
+  }
+  providers = {
+    azapi  = azapi
+    random = random
   }
 }
 
@@ -165,6 +169,10 @@ run "configured_service" {
     condition     = output.system_assigned_mi_principal_id == "00000000-0000-0000-0000-000000000002"
     error_message = "System-assigned identity output must map to Azure's response."
   }
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "premium_p2_default_capacity" {
@@ -181,6 +189,10 @@ run "premium_p2_default_capacity" {
     error_message = "Omitted capacity must leave the SKU-specific default to Azure."
   }
 
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_kind" {
@@ -189,6 +201,10 @@ run "invalid_kind" {
     kind = "Invalid"
   }
   expect_failures = [var.kind]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_socket_io_mode" {
@@ -197,6 +213,10 @@ run "invalid_socket_io_mode" {
     socket_io_service_mode = "Invalid"
   }
   expect_failures = [var.socket_io_service_mode]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "unsupported_combined_identities" {
@@ -210,6 +230,10 @@ run "unsupported_combined_identities" {
     }
   }
   expect_failures = [azapi_resource.this]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "unsupported_multiple_user_identities" {
@@ -223,6 +247,10 @@ run "unsupported_multiple_user_identities" {
     }
   }
   expect_failures = [azapi_resource.this]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_name" {
@@ -231,6 +259,10 @@ run "invalid_name" {
     name = "1-invalid"
   }
   expect_failures = [var.name]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_parent" {
@@ -239,6 +271,10 @@ run "invalid_parent" {
     parent_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
   }
   expect_failures = [var.parent_id]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_capacity" {
@@ -250,6 +286,10 @@ run "invalid_capacity" {
     }
   }
   expect_failures = [var.sku]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_network_action" {
@@ -260,6 +300,10 @@ run "invalid_network_action" {
     }
   }
   expect_failures = [var.network_acls]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "invalid_request_type" {
@@ -272,6 +316,10 @@ run "invalid_request_type" {
     }
   }
   expect_failures = [var.network_acls]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "free_client_certificate" {
@@ -283,4 +331,8 @@ run "free_client_certificate" {
     client_certificate_enabled = true
   }
   expect_failures = [var.client_certificate_enabled]
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }

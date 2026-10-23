@@ -1,3 +1,31 @@
+variable "ignore_body_changes" {
+  type = object({
+    resources_resource_groups = optional(list(string), [])
+    signalrservice_web_pub_sub = optional(object({
+      signalrservice_web_pub_sub                        = optional(list(string), [])
+      authorization_locks                               = optional(list(string), [])
+      authorization_role_assignments                    = optional(list(string), [])
+      insights_diagnostic_settings                      = optional(list(string), [])
+      network_private_endpoints                         = optional(list(string), [])
+      network_private_endpoints_private_dns_zone_groups = optional(list(string), [])
+    }), {})
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Body-relative dot-notation paths to ignore. Non-empty lists require Terraform 1.11 or later. Changes take effect only after apply; ignored configuration is not sent to Azure.
+
+- `resources_resource_groups` - Paths ignored on the resource group.
+- `signalrservice_web_pub_sub` - Ignored-path controls passed to the Web PubSub module.
+- `signalrservice_web_pub_sub.signalrservice_web_pub_sub` - Web PubSub service.
+- `signalrservice_web_pub_sub.authorization_locks` - Management locks.
+- `signalrservice_web_pub_sub.authorization_role_assignments` - Role assignments.
+- `signalrservice_web_pub_sub.insights_diagnostic_settings` - Diagnostic settings.
+- `signalrservice_web_pub_sub.network_private_endpoints` - Private endpoints.
+- `signalrservice_web_pub_sub.network_private_endpoints_private_dns_zone_groups` - Private DNS zone groups.
+DESCRIPTION
+  nullable    = false
+}
+
 variable "location" {
   type        = string
   default     = "westus3"
@@ -23,34 +51,6 @@ AzAPI resource types and API versions used by the example. Omitted module overri
 
 - `resources_resource_groups` - Resource group type and API version.
 - `signalrservice_web_pub_sub` - Resource-type overrides passed to the Web PubSub module.
-- `signalrservice_web_pub_sub.signalrservice_web_pub_sub` - Web PubSub service.
-- `signalrservice_web_pub_sub.authorization_locks` - Management locks.
-- `signalrservice_web_pub_sub.authorization_role_assignments` - Role assignments.
-- `signalrservice_web_pub_sub.insights_diagnostic_settings` - Diagnostic settings.
-- `signalrservice_web_pub_sub.network_private_endpoints` - Private endpoints.
-- `signalrservice_web_pub_sub.network_private_endpoints_private_dns_zone_groups` - Private DNS zone groups.
-DESCRIPTION
-  nullable    = false
-}
-
-variable "ignore_body_changes" {
-  type = object({
-    resources_resource_groups = optional(list(string), [])
-    signalrservice_web_pub_sub = optional(object({
-      signalrservice_web_pub_sub                        = optional(list(string), [])
-      authorization_locks                               = optional(list(string), [])
-      authorization_role_assignments                    = optional(list(string), [])
-      insights_diagnostic_settings                      = optional(list(string), [])
-      network_private_endpoints                         = optional(list(string), [])
-      network_private_endpoints_private_dns_zone_groups = optional(list(string), [])
-    }), {})
-  })
-  default     = {}
-  description = <<DESCRIPTION
-Body-relative dot-notation paths to ignore. Non-empty lists require Terraform 1.11 or later. Changes take effect only after apply; ignored configuration is not sent to Azure.
-
-- `resources_resource_groups` - Paths ignored on the resource group.
-- `signalrservice_web_pub_sub` - Ignored-path controls passed to the Web PubSub module.
 - `signalrservice_web_pub_sub.signalrservice_web_pub_sub` - Web PubSub service.
 - `signalrservice_web_pub_sub.authorization_locks` - Management locks.
 - `signalrservice_web_pub_sub.authorization_role_assignments` - Role assignments.
