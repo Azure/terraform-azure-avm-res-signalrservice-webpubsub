@@ -17,8 +17,9 @@ mock_provider "azapi" {
   }
   mock_data "azapi_client_config" {
     defaults = {
-      subscription_id = "00000000-0000-0000-0000-000000000000"
-      tenant_id       = "00000000-0000-0000-0000-000000000001"
+      subscription_id          = "00000000-0000-0000-0000-000000000000"
+      tenant_id                = "00000000-0000-0000-0000-000000000001"
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
     }
   }
   mock_data "azapi_resource_list" {
@@ -33,7 +34,6 @@ mock_provider "azapi" {
   }
 }
 
-mock_provider "modtm" {}
 mock_provider "random" {}
 
 variables {
@@ -49,6 +49,10 @@ run "interfaces_disabled" {
   assert {
     condition     = length(azapi_resource.diagnostic_settings) == 0 && length(azapi_resource.role_assignments) == 0 && length(azapi_resource.lock) == 0 && length(azapi_resource.private_endpoints) == 0
     error_message = "Optional interfaces must create no resources by default."
+  }
+  providers = {
+    azapi  = azapi
+    random = random
   }
 }
 
@@ -172,6 +176,10 @@ run "interfaces_enabled" {
     condition     = length(output.private_endpoints) == 2 && length(output.diagnostic_settings) == 1 && output.lock_resource_id != null
     error_message = "Interface outputs must expose the created resources."
   }
+  providers = {
+    azapi  = azapi
+    random = random
+  }
 }
 
 run "externally_managed_dns" {
@@ -192,5 +200,9 @@ run "externally_managed_dns" {
   assert {
     condition     = length(azapi_resource.private_endpoints) == 1 && length(azapi_resource.private_dns_zone_groups) == 0
     error_message = "External DNS management must suppress zone groups without suppressing private endpoints."
+  }
+  providers = {
+    azapi  = azapi
+    random = random
   }
 }

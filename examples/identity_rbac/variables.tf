@@ -1,3 +1,10 @@
+variable "enable_telemetry" {
+  type        = bool
+  default     = true
+  description = "Whether to enable module telemetry. See https://aka.ms/avm/telemetryinfo."
+  nullable    = false
+}
+
 variable "location" {
   type        = string
   default     = "westus3"
@@ -9,11 +16,4 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "Optional tags applied to all tag-capable resources."
-}
-
-variable "enable_telemetry" {
-  type        = bool
-  default     = true
-  description = "Whether to enable module telemetry. See https://aka.ms/avm/telemetryinfo."
-  nullable    = false
 }
